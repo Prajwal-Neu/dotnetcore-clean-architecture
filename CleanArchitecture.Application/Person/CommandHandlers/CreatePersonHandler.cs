@@ -1,7 +1,9 @@
 ﻿using CleanArchitecture.Application.Abstractions;
 using CleanArchitecture.Application.Person.Commands;
+using CleanArchitecture.Application.Person.Validators;
 using Mapster;
 using MediatR;
+using System.Text.Json;
 
 namespace CleanArchitecture.Application.Person.CommandHandlers
 {
@@ -16,7 +18,10 @@ namespace CleanArchitecture.Application.Person.CommandHandlers
 
         public async Task<Domain.Entities.Person> Handle(CreatePerson request, CancellationToken cancellationToken)
         {
+            // Mapping
             var person = request.Adapt<Domain.Entities.Person>();
+
+            // Data
             return await _personRepository.AddPerson(person);
         }
     };

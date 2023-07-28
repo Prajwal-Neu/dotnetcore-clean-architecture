@@ -1,5 +1,6 @@
 ﻿using CleanArchitecture.Application.Person.Commands;
 using CleanArchitecture.Application.Person.Queries;
+using CleanArchitecture.Application.Person.Validators;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,8 +10,7 @@ namespace CleanArchitecture.WebAPI.Controllers
     [ApiController]
     public class PersonController : ControllerBase
     {
-
-        IMediator _mediator;
+        private IMediator _mediator;
 
         public PersonController(IMediator mediator)
         {
@@ -33,9 +33,11 @@ namespace CleanArchitecture.WebAPI.Controllers
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreatePerson command)
         {
-            if (command is null) return BadRequest();
-            var createdPerson = await _mediator.Send(command);
-            return Ok(createdPerson);
+            var validator = new CreatePersonValidator();
+            var validationResult = validator.Validate(command);
+            return validationResult.IsValid 
+                ? Ok(await _mediator.Send(command)) 
+                : BadRequest(validationResult.Errors.Select(x => x.ErrorMessage).ToList());
         }
 
         [HttpDelete("{id}")]
