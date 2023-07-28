@@ -1,5 +1,6 @@
 ﻿using CleanArchitecture.Application.Abstractions;
 using CleanArchitecture.Application.Person.Commands;
+using Mapster;
 using MediatR;
 
 namespace CleanArchitecture.Application.Person.CommandHandlers
@@ -15,12 +16,7 @@ namespace CleanArchitecture.Application.Person.CommandHandlers
 
         public async Task<Domain.Entities.Person> Handle(CreatePerson request, CancellationToken cancellationToken)
         {
-            var person = new Domain.Entities.Person
-            {
-                Name = request.Name,
-                Email = request.Email
-            };
-
+            var person = request.Adapt<Domain.Entities.Person>();
             return await _personRepository.AddPerson(person);
         }
     };
